@@ -1,15 +1,14 @@
 package com.airline.manage.model;
 
 import jakarta.persistence.*;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "avion_vol")
 public class AvionVol {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "avion_id", nullable = false)
@@ -20,13 +19,24 @@ public class AvionVol {
     private Vol vol;
 
     @Column(name = "date_heure", nullable = false)
-    private OffsetDateTime dateHeure;
+    private LocalDateTime dateHeure;
 
-    public Integer getId() {
+    // Constructeurs
+    public AvionVol() {
+    }
+
+    public AvionVol(Avion avion, Vol vol, LocalDateTime dateHeure) {
+        this.avion = avion;
+        this.vol = vol;
+        this.dateHeure = dateHeure;
+    }
+
+    // Getters et Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,11 +56,11 @@ public class AvionVol {
         this.vol = vol;
     }
 
-    public OffsetDateTime getDateHeure() {
+    public LocalDateTime getDateHeure() {
         return dateHeure;
     }
 
-    public void setDateHeure(OffsetDateTime dateHeure) {
+    public void setDateHeure(LocalDateTime dateHeure) {
         this.dateHeure = dateHeure;
     }
 }

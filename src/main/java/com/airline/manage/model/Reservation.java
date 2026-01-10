@@ -5,10 +5,9 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "reservation")
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "avion_vol_id", nullable = false)
@@ -21,11 +20,22 @@ public class Reservation {
     @Column(name = "nb_places", nullable = false)
     private Integer nbPlaces;
 
-    public Integer getId() {
+    // Constructeurs
+    public Reservation() {
+    }
+
+    public Reservation(AvionVol avionVol, Client client, Integer nbPlaces) {
+        this.avionVol = avionVol;
+        this.client = client;
+        this.nbPlaces = nbPlaces;
+    }
+
+    // Getters et Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

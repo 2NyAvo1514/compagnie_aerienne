@@ -5,25 +5,35 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "avion")
 public class Avion {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nom", nullable = false, length = 100)
     private String nom;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "modele", nullable = false, length = 100)
     private String modele;
 
-    @Column(nullable = false)
+    @Column(name = "capacite", nullable = false)
     private Integer capacite;
 
-    public Integer getId() {
+    // Constructeurs
+    public Avion() {
+    }
+
+    public Avion(String nom, String modele, Integer capacite) {
+        this.nom = nom;
+        this.modele = modele;
+        this.capacite = capacite;
+    }
+
+    // Getters et Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

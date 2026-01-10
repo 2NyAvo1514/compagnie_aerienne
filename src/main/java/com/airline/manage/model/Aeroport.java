@@ -5,22 +5,31 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "aeroport")
 public class Aeroport {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nom", nullable = false, length = 100)
     private String nom;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "ville", nullable = false, length = 100)
     private String ville;
 
-    public Integer getId() {
+    // Constructeurs
+    public Aeroport() {
+    }
+
+    public Aeroport(String nom, String ville) {
+        this.nom = nom;
+        this.ville = ville;
+    }
+
+    // Getters et Setters
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

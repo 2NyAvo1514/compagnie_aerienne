@@ -94,3 +94,109 @@ VALUES (
      WHERE a1.ville = 'Antananarivo' AND a2.ville = 'Toliara'),
     '2026-01-14 07:00:00+03'
 );
+
+
+-- Insertion des données de test
+
+-- Aéroports
+INSERT INTO aeroport (nom, ville) VALUES 
+('Aéroport d''Ivato', 'Antananarivo'),
+('Aéroport de Fascène', 'Nosy Be')
+ON CONFLICT DO NOTHING;
+
+-- Avions
+INSERT INTO avion (nom, modele, capacite) VALUES 
+('Airbus A320-200', 'A320', 180),
+('Boeing 737-800', 'B737', 189),
+('ATR 72-600', 'ATR72', 78)
+ON CONFLICT DO NOTHING;
+
+-- Vol entre TNR et Nosy Be
+INSERT INTO vol (aeroport_depart_id, aeroport_arrivee_id)
+SELECT 
+    (SELECT id FROM aeroport WHERE nom = 'Aéroport d''Ivato'),
+    (SELECT id FROM aeroport WHERE nom = 'Aéroport de Fascène')
+WHERE NOT EXISTS (
+    SELECT 1 FROM vol WHERE 
+    aeroport_depart_id = (SELECT id FROM aeroport WHERE nom = 'Aéroport d''Ivato') AND
+    aeroport_arrivee_id = (SELECT id FROM aeroport WHERE nom = 'Aéroport de Fascène')
+);
+
+-- Programmation des vols pour le 12 janvier 2024
+INSERT INTO avion_vol (avion_id, vol_id, date_heure)
+SELECT 
+    a.id,
+    v.id,
+    '2024-01-12 12:00:00+03'
+FROM avion a, vol v
+WHERE a.nom = 'Boeing 737-800' 
+AND v.id = (SELECT id FROM vol WHERE aeroport_depart_id = 
+    (SELECT id FROM aeroport WHERE nom = 'Aéroport d''Ivato'))
+ON CONFLICT DO NOTHING;
+
+-- Ajouter d'autres vols autour de 12h
+INSERT INTO avion_vol (avion_id, vol_id, date_heure)
+SELECT 
+    a.id,
+    v.id,
+    '2024-01-12 11:30:00+03'
+FROM avion a, vol v
+WHERE a.nom = 'Airbus A320-200' 
+AND v.id = (SELECT id FROM vol WHERE aeroport_depart_id = 
+    (SELECT id FROM aeroport WHERE nom = 'Aéroport d''Ivato'))
+ON CONFLICT DO NOTHING;
+
+INSERT INTO avion_vol (avion_id, vol_id, date_heure)
+SELECT 
+    a.id,
+    v.id,
+    '2024-01-12 13:15:00+03'
+FROM avion a, vol v
+WHERE a.nom = 'ATR 72-600' 
+AND v.id = (SELECT id FROM vol WHERE aeroport_depart_id = 
+    (SELECT id FROM aeroport WHERE nom = 'Aéroport d''Ivato'))
+ON CONFLICT DO NOTHING;
+
+-- Insérer des vols programmés avec différentes dates
+INSERT INTO avion_vol (avion_id, vol_id, date_heure)
+SELECT 
+    a.id,
+    v.id,
+    CASE 
+        WHEN a.modele = 'A320' THEN NOW() + INTERVAL '1 day'
+        WHEN a.modele = 'B737' THEN NOW() + INTERVAL '2 days'
+        WHEN a.modele = 'ATR72' THEN NOW() + INTERVAL '3 days'
+        WHEN a.modele = 'A330' THEN NOW() + INTERVAL '4 days'
+        ELSE NOW() + INTERVAL '5 days'
+    END
+FROM avion a
+CROSS JOIN vol v
+WHERE NOT EXISTS (
+    SELECT 1 FROM avion_vol av2 
+    WHERE av2.avion_id = a.id 
+    AND av2.vol_id = v.id
+    AND av2.date_heure = CASE 
+        WHEN a.modele = 'A320' THEN NOW() + INTERVAL '1 day'
+        WHEN a.modele = 'B737' THEN NOW() + INTERVAL '2 days'
+        WHEN a.modele = 'ATR72' THEN NOW() + INTERVAL '3 days'
+        WHEN a.modele = 'A330' THEN NOW() + INTERVAL '4 days'
+        ELSE NOW() + INTERVAL '5 days'
+    END
+)
+LIMIT 10;
+
+-- Vérifier les vols insérés
+-- SELECT 
+--     av.id,
+--     av.date_heure,
+--     a.nom as avion,
+--     a.modele,
+--     ad.nom as depart,
+--     aa.nom as arrivee
+-- FROM avion_vol av
+-- JOIN avion a ON av.avion_id = a.id
+-- JOIN vol v ON av.vol_id = v.id
+-- JOIN aeroport ad ON v.aeroport_depart_id = ad.id
+-- JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
+-- WHERE av.date_heure >= NOW()
+-- ORDER BY av.date_heure;

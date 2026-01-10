@@ -1,18 +1,16 @@
 package com.airline.manage.controller;
 
-import com.airline.manage.model.AvionVol;
-import com.airline.manage.model.Client;
+import com.airline.manage.dto.RechercheVolDTO;
+import com.airline.manage.dto.ReservationDTO;
+import com.airline.manage.dto.ResultatVolDTO;
+import com.airline.manage.service.RechercheVolService;
 import com.airline.manage.service.ReservationService;
-import com.airline.manage.repository.AvionVolRepository;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
-// import java.time.ZoneOffset;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -20,54 +18,53 @@ import java.util.List;
 public class ReservationController {
 
     @Autowired
-    private AvionVolRepository avionVolRepository;
+    private RechercheVolService rechercheVolService;
 
     @Autowired
     private ReservationService reservationService;
 
-    // Page recherche vols
-    @GetMapping("/chercher")
-    public String chercherVolForm() {
-        return "reservation/chercher";
+    @GetMapping("/recherche")
+    public String afficherPageRecherche(Model model) {
+        model.addAttribute("rechercheVolDTO", new RechercheVolDTO());
+        return "recherche-vol";
     }
 
-    // Soumission recherche
-    @PostMapping("/chercher")
-    public String chercherVolResult(
-            @RequestParam String depart,
-            @RequestParam String arrivee,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") OffsetDateTime dateHeure,
-            Model model) {
-        OffsetDateTime start = dateHeure.minusHours(1);
-        OffsetDateTime end = dateHeure.plusHours(1);
+    @PostMapping("/rechercher")
+    public String rechercherVols(@ModelAttribute RechercheVolDTO rechercheVolDTO, Model model) {
+        // Recherche de TNR à Nosy Be pour le 12 janvier à 12h
+        rechercheVolDTO.setAeroportDepart("Aéroport d'Ivato");
+        rechercheVolDTO.setAeroportArrivee("Aéroport de Fascène");
+        rechercheVolDTO.setDate(LocalDate.of(2024, 1, 12));
+        rechercheVolDTO.setHeure(12);
 
-        List<AvionVol> vols = avionVolRepository.findByVolAeroportDepartNomAndVolAeroportArriveeNomAndDateHeureBetween(
-                depart, arrivee, start, end);
+        List<ResultatVolDTO> resultats = rechercheVolService.rechercherVols(rechercheVolDTO);
 
-        model.addAttribute("vols", vols);
-        return "reservation/vols-disponibles";
+        model.addAttribute("resultats", resultats);
+        model.addAttribute("recherche", rechercheVolDTO);
+
+        return "resultats-recherche";
     }
 
-    // Réserver un vol
-    @PostMapping("/reserver")
-    public String reserverVol(
-            @RequestParam Integer avionVolId,
-            @RequestParam int nbPlaces,
-            HttpSession session,
-            Model model) {
-        Client client = (Client) session.getAttribute("client"); // client connecté
-        if (client == null) {
-            model.addAttribute("message", "Vous devez être connecté");
-            return "reservation/chercher";
+    @GetMapping("/reserver/{avionVolId}")
+    public String afficherFormulaireReservation(@PathVariable Long avionVolId, Model model) {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setAvionVolId(avionVolId);
+
+        model.addAttribute("reservationDTO", reservationDTO);
+        return "formulaire-reservation";
+    }
+
+    @PostMapping("/confirmer")
+    public String confirmerReservation(@ModelAttribute ReservationDTO reservationDTO, Model model) {
+        try {
+            reservationService.creerReservation(reservationDTO);
+            model.addAttribute("message", "Réservation confirmée avec succès !");
+            model.addAttribute("reservation", reservationDTO);
+            return "confirmation-reservation";
+        } catch (Exception e) {
+            model.addAttribute("erreur", e.getMessage());
+            model.addAttribute("reservationDTO", reservationDTO);
+            return "formulaire-reservation";
         }
-
-        boolean ok = reservationService.reserver(client, avionVolId, nbPlaces);
-
-        if (ok)
-            model.addAttribute("message", "Réservation réussie !");
-        else
-            model.addAttribute("message", "Nombre de places insuffisant ou vol introuvable");
-
-        return "reservation/confirmation";
     }
 }

@@ -1,15 +1,16 @@
 package com.airline.manage.service;
 
+import com.airline.manage.dto.ReservationDTO;
 import com.airline.manage.model.AvionVol;
 import com.airline.manage.model.Client;
 import com.airline.manage.model.Reservation;
 import com.airline.manage.repository.AvionVolRepository;
+import com.airline.manage.repository.ClientRepository;
 import com.airline.manage.repository.ReservationRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Service
@@ -19,29 +20,48 @@ public class ReservationService {
     private AvionVolRepository avionVolRepository;
 
     @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
     private ReservationRepository reservationRepository;
 
     @Transactional
-    public boolean reserver(Client client, Integer avionVolId, int nbPlaces) {
-        Optional<AvionVol> volOpt = avionVolRepository.findById(avionVolId);
-
-        if (volOpt.isEmpty())
-            return false;
-
-        AvionVol vol = volOpt.get();
-
-        // Calcul du nombre de places déjà réservées
-        int placesReservees = reservationRepository.sumNbPlacesByAvionVol(vol.getId());
-        if (placesReservees + nbPlaces > vol.getAvion().getCapacite()) {
-            return false; // pas assez de places disponibles
+    public Reservation creerReservation(ReservationDTO reservationDTO) throws Exception {
+        // Vérifier l'existence de l'AvionVol
+        Optional<AvionVol> avionVolOpt = avionVolRepository.findById(reservationDTO.getAvionVolId());
+        if (!avionVolOpt.isPresent()) {
+            throw new Exception("Vol non trouvé");
         }
 
-        Reservation r = new Reservation();
-        r.setClient(client);
-        r.setAvionVol(vol);
-        r.setNbPlaces(nbPlaces);
-        reservationRepository.save(r);
+        AvionVol avionVol = avionVolOpt.get();
 
-        return true;
+        // Vérifier les places disponibles
+        Integer placesReservees = reservationRepository.getNombrePlacesReservees(avionVol.getId());
+        Integer placesDisponibles = avionVol.getAvion().getCapacite() - (placesReservees != null ? placesReservees : 0);
+
+        if (reservationDTO.getNbPlaces() > placesDisponibles) {
+            throw new Exception("Places insuffisantes. Disponible: " + placesDisponibles);
+        }
+
+        // Rechercher ou créer le client
+        Client client;
+        Optional<Client> clientOpt = clientRepository.findByEmail(reservationDTO.getEmailClient());
+
+        if (clientOpt.isPresent()) {
+            client = clientOpt.get();
+            // Vérifier que le nom correspond
+            if (!client.getNom().equals(reservationDTO.getNomClient())) {
+                throw new Exception("L'email est déjà utilisé par un autre client");
+            }
+        } else {
+            // Créer un nouveau client
+            client = new Client(reservationDTO.getNomClient(), reservationDTO.getEmailClient());
+            client = clientRepository.save(client);
+        }
+
+        // Créer la réservation
+        Reservation reservation = new Reservation(avionVol, client, reservationDTO.getNbPlaces());
+
+        return reservationRepository.save(reservation);
     }
 }
