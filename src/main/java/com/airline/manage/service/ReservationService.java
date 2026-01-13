@@ -11,57 +11,54 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class ReservationService {
 
     @Autowired
-    private AvionVolRepository avionVolRepository;
+    private ReservationRepository reservationRepository;
 
     @Autowired
     private ClientRepository clientRepository;
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private AvionVolRepository avionVolRepository;
 
     @Transactional
-    public Reservation creerReservation(ReservationDTO reservationDTO) throws Exception {
-        // Vérifier l'existence de l'AvionVol
-        Optional<AvionVol> avionVolOpt = avionVolRepository.findById(reservationDTO.getAvionVolId());
-        if (!avionVolOpt.isPresent()) {
-            throw new Exception("Vol non trouvé");
-        }
-
-        AvionVol avionVol = avionVolOpt.get();
-
-        // Vérifier les places disponibles
-        Integer placesReservees = reservationRepository.getNombrePlacesReservees(avionVol.getId());
-        Integer placesDisponibles = avionVol.getAvion().getCapacite() - (placesReservees != null ? placesReservees : 0);
-
-        if (reservationDTO.getNbPlaces() > placesDisponibles) {
-            throw new Exception("Places insuffisantes. Disponible: " + placesDisponibles);
-        }
-
-        // Rechercher ou créer le client
-        Client client;
-        Optional<Client> clientOpt = clientRepository.findByEmail(reservationDTO.getEmailClient());
-
-        if (clientOpt.isPresent()) {
-            client = clientOpt.get();
-            // Vérifier que le nom correspond
-            if (!client.getNom().equals(reservationDTO.getNomClient())) {
-                throw new Exception("L'email est déjà utilisé par un autre client");
-            }
-        } else {
-            // Créer un nouveau client
-            client = new Client(reservationDTO.getNomClient(), reservationDTO.getEmailClient());
+    public Reservation creerReservation(ReservationDTO reservationDTO) {
+        // Vérifier si le client existe, sinon le créer
+        Client client = clientRepository.findByEmail(reservationDTO.getEmailClient());
+        if (client == null) {
+            client = new Client();
+            client.setNom(reservationDTO.getNomClient());
+            client.setEmail(reservationDTO.getEmailClient());
             client = clientRepository.save(client);
         }
 
+        // Vérifier la disponibilité des places
+        AvionVol avionVol = avionVolRepository.findById(reservationDTO.getAvionVolId())
+                .orElseThrow(() -> new RuntimeException("Vol non trouvé"));
+
+        int placesReservees = reservationRepository.sumPlacesByAvionVol(avionVol.getId());
+        int placesDisponibles = avionVol.getAvion().getCapacite() - (placesReservees != 0 ? placesReservees : 0);
+
+        if (reservationDTO.getNbPlaces() > placesDisponibles) {
+            throw new RuntimeException("Nombre de places insuffisant. Places disponibles: " + placesDisponibles);
+        }
+
         // Créer la réservation
-        Reservation reservation = new Reservation(avionVol, client, reservationDTO.getNbPlaces());
+        Reservation reservation = new Reservation();
+        reservation.setAvionVol(avionVol);
+        reservation.setClient(client);
+        reservation.setNbPlaces(reservationDTO.getNbPlaces());
 
         return reservationRepository.save(reservation);
+    }
+
+    public int getPlacesDisponibles(Integer avionVolId) {
+        AvionVol avionVol = avionVolRepository.findById(avionVolId)
+                .orElseThrow(() -> new RuntimeException("Vol non trouvé"));
+
+        int placesReservees = reservationRepository.sumPlacesByAvionVol(avionVolId);
+        return avionVol.getAvion().getCapacite() - (placesReservees != 0 ? placesReservees : 0);
     }
 }

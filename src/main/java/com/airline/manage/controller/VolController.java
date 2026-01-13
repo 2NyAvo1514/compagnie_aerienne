@@ -1,78 +1,90 @@
 package com.airline.manage.controller;
 
-import com.airline.manage.dto.FiltreVolDTO;
-import com.airline.manage.dto.ResultatVolDTO;
+import com.airline.manage.dto.RechercheVolDTO;
 import com.airline.manage.model.Aeroport;
+import com.airline.manage.model.AvionVol;
+import com.airline.manage.service.VolService;
 import com.airline.manage.repository.AeroportRepository;
-import com.airline.manage.service.RechercheVolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/vols")
 public class VolController {
 
     @Autowired
-    private RechercheVolService rechercheVolService;
+    private VolService volService;
 
     @Autowired
     private AeroportRepository aeroportRepository;
 
-    @GetMapping("/liste")
-public String listerVols(
-        @ModelAttribute FiltreVolDTO filtre,
-        @RequestParam(value = "date", required = false) String dateParam,
-        Model model) {
-    
-    // Traiter le paramètre date venant du formulaire
-    if (dateParam != null) {
-        if (dateParam.isEmpty()) {
-            // Champ date vide = pas de filtre par date
-            filtre.setDate(null);
-        } else {
-            try {
-                filtre.setDate(LocalDate.parse(dateParam));
-            } catch (Exception e) {
-                filtre.setDate(null);
-            }
-        }
-    }
-    
-    // NE PAS mettre de date par défaut ici !
-    // Laisser le service gérer l'absence de date
-    
-    // Rechercher les vols selon les filtres
-    List<ResultatVolDTO> vols = rechercheVolService.rechercherVolsAvecFiltres(filtre);
-    
-    // Ajouter la liste des aéroports pour le select
-    List<Aeroport> aeroports = aeroportRepository.findAll();
-    
-    model.addAttribute("vols", vols);
-    model.addAttribute("aeroports", aeroports);
-    model.addAttribute("filtre", filtre);
-    
-    return "liste-vols";
-}
-
-    @GetMapping("/recherche-avancee")
-    public String rechercheAvancee(Model model) {
+    @GetMapping("/")
+    public String accueil(Model model) {
+        // Initialiser avec les vols à partir d'aujourd'hui
+        List<AvionVol> vols = volService.rechercherVolsAujourdhui();
         List<Aeroport> aeroports = aeroportRepository.findAll();
 
-        // Créer un filtre par défaut avec date d'aujourd'hui
-        FiltreVolDTO filtre = new FiltreVolDTO();
-        filtre.setDate(LocalDate.now());
+        RechercheVolDTO criteres = new RechercheVolDTO();
+        criteres.setDateDebut(LocalDateTime.now());
 
+        model.addAttribute("vols", vols);
         model.addAttribute("aeroports", aeroports);
-        model.addAttribute("filtre", filtre);
+        model.addAttribute("criteres", criteres);
+        model.addAttribute("maintenant", LocalDateTime.now());
 
-        return "recherche-avancee";
+        return "index";
+    }
+
+    @GetMapping("/rechercher")
+    public String rechercherVols(
+            @RequestParam(required = false) Integer depart,
+            @RequestParam(required = false) Integer arrivee,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime heure,
+            Model model) {
+
+        RechercheVolDTO criteres = new RechercheVolDTO();
+        criteres.setAeroportDepartId(depart);
+        criteres.setAeroportArriveeId(arrivee);
+
+        if (date != null) {
+            LocalDateTime dateHeure = LocalDateTime.of(date, heure != null ? heure : LocalTime.MIN);
+            criteres.setDateDebut(dateHeure);
+            // criteres.setDateFin(dateHeure.with(LocalTime.MAX));
+        } else {
+            // Si pas de date, on prend à partir de maintenant
+            criteres.setDateDebut(LocalDateTime.now());
+        }
+
+        List<AvionVol> vols = volService.rechercherVols(criteres);
+        List<Aeroport> aeroports = aeroportRepository.findAll();
+
+        model.addAttribute("vols", vols);
+        model.addAttribute("aeroports", aeroports);
+        model.addAttribute("criteres", criteres);
+        model.addAttribute("maintenant", LocalDateTime.now());
+
+        return "index";
+    }
+
+    @GetMapping("/details")
+    public String detailsVol(@RequestParam Integer id, Model model) {
+        AvionVol avionVol = volService.findAvionVolById(id);
+        if (avionVol == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("vol", avionVol);
+        model.addAttribute("maintenant", LocalDateTime.now());
+        return "detail";
     }
 }

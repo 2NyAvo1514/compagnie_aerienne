@@ -1,54 +1,66 @@
 package com.airline.manage.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class RechercheVolDTO {
-    private String aeroportDepart;
-    private String aeroportArrivee;
-    private LocalDate date;
-    private Integer heure;
+    private Integer aeroportDepartId;
+    private Integer aeroportArriveeId;
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
 
     // Constructeurs
     public RechercheVolDTO() {
     }
 
-    public RechercheVolDTO(String aeroportDepart, String aeroportArrivee, LocalDate date, Integer heure) {
-        this.aeroportDepart = aeroportDepart;
-        this.aeroportArrivee = aeroportArrivee;
-        this.date = date;
-        this.heure = heure;
+    public RechercheVolDTO(Integer aeroportDepartId, Integer aeroportArriveeId,
+            LocalDateTime dateDebut, LocalDateTime dateFin) {
+        this.aeroportDepartId = aeroportDepartId;
+        this.aeroportArriveeId = aeroportArriveeId;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
     }
 
     // Getters et Setters
-    public String getAeroportDepart() {
-        return aeroportDepart;
+    public Integer getAeroportDepartId() {
+        return aeroportDepartId;
     }
 
-    public void setAeroportDepart(String aeroportDepart) {
-        this.aeroportDepart = aeroportDepart;
+    public void setAeroportDepartId(Integer aeroportDepartId) {
+        this.aeroportDepartId = aeroportDepartId;
     }
 
-    public String getAeroportArrivee() {
-        return aeroportArrivee;
+    public Integer getAeroportArriveeId() {
+        return aeroportArriveeId;
     }
 
-    public void setAeroportArrivee(String aeroportArrivee) {
-        this.aeroportArrivee = aeroportArrivee;
+    public void setAeroportArriveeId(Integer aeroportArriveeId) {
+        this.aeroportArriveeId = aeroportArriveeId;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getDateDebut() {
+        return dateDebut;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDateDebut(LocalDateTime dateDebut) {
+        this.dateDebut = dateDebut;
     }
 
-    public Integer getHeure() {
-        return heure;
+    public LocalDateTime getDateFin() {
+        return dateFin;
     }
 
-    public void setHeure(Integer heure) {
-        this.heure = heure;
+    public void setDateFin(LocalDateTime dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    // Méthode toString pour le débogage
+    @Override
+    public String toString() {
+        return "RechercheVolDTO{" +
+                "aeroportDepartId=" + aeroportDepartId +
+                ", aeroportArriveeId=" + aeroportArriveeId +
+                ", dateDebut=" + dateDebut +
+                ", dateFin=" + dateFin +
+                '}';
     }
 }

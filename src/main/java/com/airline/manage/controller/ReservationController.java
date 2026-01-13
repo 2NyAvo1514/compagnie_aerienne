@@ -1,70 +1,61 @@
 package com.airline.manage.controller;
 
-import com.airline.manage.dto.RechercheVolDTO;
 import com.airline.manage.dto.ReservationDTO;
-import com.airline.manage.dto.ResultatVolDTO;
-import com.airline.manage.service.RechercheVolService;
+import com.airline.manage.model.AvionVol;
 import com.airline.manage.service.ReservationService;
+import com.airline.manage.service.VolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Controller
-@RequestMapping("/reservation")
 public class ReservationController {
 
     @Autowired
-    private RechercheVolService rechercheVolService;
+    private VolService volService;
 
     @Autowired
     private ReservationService reservationService;
 
-    @GetMapping("/recherche")
-    public String afficherPageRecherche(Model model) {
-        model.addAttribute("rechercheVolDTO", new RechercheVolDTO());
-        return "recherche-vol";
-    }
+    @GetMapping("/reserver")
+    public String formulaireReservation(@RequestParam Integer id, Model model) {
+        AvionVol avionVol = volService.findAvionVolById(id);
+        if (avionVol == null) {
+            return "redirect:/";
+        }
 
-    @PostMapping("/rechercher")
-    public String rechercherVols(@ModelAttribute RechercheVolDTO rechercheVolDTO, Model model) {
-        // Recherche de TNR à Nosy Be pour le 12 janvier à 12h
-        rechercheVolDTO.setAeroportDepart("Aéroport d'Ivato");
-        rechercheVolDTO.setAeroportArrivee("Aéroport de Fascène");
-        rechercheVolDTO.setDate(LocalDate.of(2024, 1, 12));
-        rechercheVolDTO.setHeure(12);
+        int placesDisponibles = reservationService.getPlacesDisponibles(id);
 
-        List<ResultatVolDTO> resultats = rechercheVolService.rechercherVols(rechercheVolDTO);
-
-        model.addAttribute("resultats", resultats);
-        model.addAttribute("recherche", rechercheVolDTO);
-
-        return "resultats-recherche";
-    }
-
-    @GetMapping("/reserver/{avionVolId}")
-    public String afficherFormulaireReservation(@PathVariable Long avionVolId, Model model) {
         ReservationDTO reservationDTO = new ReservationDTO();
-        reservationDTO.setAvionVolId(avionVolId);
+        reservationDTO.setAvionVolId(id);
 
+        model.addAttribute("vol", avionVol);
+        model.addAttribute("placesDisponibles", placesDisponibles);
         model.addAttribute("reservationDTO", reservationDTO);
-        return "formulaire-reservation";
+        model.addAttribute("maintenant", LocalDateTime.now());
+
+        return "reservation";
     }
 
-    @PostMapping("/confirmer")
-    public String confirmerReservation(@ModelAttribute ReservationDTO reservationDTO, Model model) {
+    @PostMapping("/reserver")
+    public String confirmerReservation(
+            @ModelAttribute("reservationDTO") ReservationDTO reservationDTO,
+            RedirectAttributes redirectAttributes) {
+
         try {
             reservationService.creerReservation(reservationDTO);
-            model.addAttribute("message", "Réservation confirmée avec succès !");
-            model.addAttribute("reservation", reservationDTO);
-            return "confirmation-reservation";
+            redirectAttributes.addFlashAttribute("success", "Réservation confirmée avec succès!");
+            return "redirect:/";
         } catch (Exception e) {
-            model.addAttribute("erreur", e.getMessage());
-            model.addAttribute("reservationDTO", reservationDTO);
-            return "formulaire-reservation";
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/reserver?id=" + reservationDTO.getAvionVolId();
         }
     }
 }

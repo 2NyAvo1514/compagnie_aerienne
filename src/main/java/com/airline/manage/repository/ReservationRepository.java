@@ -6,12 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    @Query("SELECT COALESCE(SUM(r.nbPlaces), 0) FROM Reservation r WHERE r.avionVol.id = :avionVolId")
-    Integer getNombrePlacesReservees(@Param("avionVolId") Long avionVolId);
+public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    List<Reservation> findByClientId(Long clientId);
+    @Query("SELECT COALESCE(SUM(r.nbPlaces), 0) FROM Reservation r WHERE r.avionVol.id = :avionVolId")
+    Integer sumPlacesByAvionVol(@Param("avionVolId") Integer avionVolId);
 }

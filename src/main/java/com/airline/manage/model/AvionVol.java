@@ -2,13 +2,14 @@ package com.airline.manage.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "avion_vol")
 public class AvionVol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "avion_id", nullable = false)
@@ -32,11 +33,11 @@ public class AvionVol {
     }
 
     // Getters et Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -62,5 +63,32 @@ public class AvionVol {
 
     public void setDateHeure(LocalDateTime dateHeure) {
         this.dateHeure = dateHeure;
+    }
+
+    // Méthode pour formater la date
+    public String getDateHeureFormatted() {
+        if (dateHeure == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return dateHeure.format(formatter);
+    }
+    
+    // Méthode pour savoir si le vol est passé
+    public boolean isPasse() {
+        if (dateHeure == null) return false;
+        return dateHeure.isBefore(LocalDateTime.now());
+    }
+    
+    // Méthode pour formater la date pour les inputs HTML
+    public String getDateHeureForInput() {
+        if (dateHeure == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return dateHeure.format(formatter);
+    }
+    
+    // Méthode pour formater l'heure pour les inputs HTML
+    public String getHeureForInput() {
+        if (dateHeure == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return dateHeure.format(formatter);
     }
 }

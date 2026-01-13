@@ -1,7 +1,7 @@
 package com.airline.manage.dto;
 
 public class ReservationDTO {
-    private Long avionVolId;
+    private Integer avionVolId;
     private String nomClient;
     private String emailClient;
     private Integer nbPlaces;
@@ -10,7 +10,7 @@ public class ReservationDTO {
     public ReservationDTO() {
     }
 
-    public ReservationDTO(Long avionVolId, String nomClient, String emailClient, Integer nbPlaces) {
+    public ReservationDTO(Integer avionVolId, String nomClient, String emailClient, Integer nbPlaces) {
         this.avionVolId = avionVolId;
         this.nomClient = nomClient;
         this.emailClient = emailClient;
@@ -18,11 +18,11 @@ public class ReservationDTO {
     }
 
     // Getters et Setters
-    public Long getAvionVolId() {
+    public Integer getAvionVolId() {
         return avionVolId;
     }
 
-    public void setAvionVolId(Long avionVolId) {
+    public void setAvionVolId(Integer avionVolId) {
         this.avionVolId = avionVolId;
     }
 
@@ -48,5 +48,16 @@ public class ReservationDTO {
 
     public void setNbPlaces(Integer nbPlaces) {
         this.nbPlaces = nbPlaces;
+    }
+
+    // Méthode toString pour le débogage
+    @Override
+    public String toString() {
+        return "ReservationDTO{" +
+                "avionVolId=" + avionVolId +
+                ", nomClient='" + nomClient + '\'' +
+                ", emailClient='" + emailClient + '\'' +
+                ", nbPlaces=" + nbPlaces +
+                '}';
     }
 }

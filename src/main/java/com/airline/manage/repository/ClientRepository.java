@@ -5,9 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.airline.manage.model.Client;
 
-import java.util.Optional;
+// import java.util.Optional;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    Optional<Client> findByEmail(String email);
+    Client findByEmail(String email);
 }
