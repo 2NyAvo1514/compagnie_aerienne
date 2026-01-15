@@ -1,15 +1,14 @@
 package com.airline.manage.service;
 
 import com.airline.manage.dto.ReservationDTO;
-import com.airline.manage.model.AvionVol;
-import com.airline.manage.model.Client;
-import com.airline.manage.model.Reservation;
-import com.airline.manage.repository.AvionVolRepository;
-import com.airline.manage.repository.ClientRepository;
-import com.airline.manage.repository.ReservationRepository;
+import com.airline.manage.model.*;
+import com.airline.manage.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class ReservationService {
@@ -45,11 +44,21 @@ public class ReservationService {
             throw new RuntimeException("Nombre de places insuffisant. Places disponibles: " + placesDisponibles);
         }
 
+        // Calculer le prix total
+        BigDecimal prixParPlace = avionVol.getVol().getPrix();
+        BigDecimal prixTotal = prixParPlace.multiply(BigDecimal.valueOf(reservationDTO.getNbPlaces()));
+
+        // Ajouter des frais de service (10%)
+        BigDecimal fraisService = prixTotal.multiply(new BigDecimal("0.10"));
+        prixTotal = prixTotal.add(fraisService);
+
         // Créer la réservation
         Reservation reservation = new Reservation();
         reservation.setAvionVol(avionVol);
         reservation.setClient(client);
         reservation.setNbPlaces(reservationDTO.getNbPlaces());
+        reservation.setPrixTotal(prixTotal);
+        reservation.setDateReservation(LocalDateTime.now());
 
         return reservationRepository.save(reservation);
     }
@@ -60,5 +69,23 @@ public class ReservationService {
 
         int placesReservees = reservationRepository.sumPlacesByAvionVol(avionVolId);
         return avionVol.getAvion().getCapacite() - (placesReservees != 0 ? placesReservees : 0);
+    }
+
+    // Nouvelle méthode pour calculer le chiffre d'affaires par avion
+    public BigDecimal getChiffreAffairesParAvion(Integer avionId) {
+        BigDecimal chiffreAffaires = reservationRepository.getChiffreAffairesParAvion(avionId);
+        return chiffreAffaires != null ? chiffreAffaires : BigDecimal.ZERO;
+    }
+
+    // Méthode pour obtenir le chiffre d'affaires total
+    public BigDecimal getChiffreAffairesTotal() {
+        BigDecimal chiffreAffaires = reservationRepository.getChiffreAffairesTotal();
+        return chiffreAffaires != null ? chiffreAffaires : BigDecimal.ZERO;
+    }
+
+    // Méthode pour obtenir le chiffre d'affaires par période
+    public BigDecimal getChiffreAffairesParPeriode(LocalDateTime dateDebut, LocalDateTime dateFin) {
+        BigDecimal chiffreAffaires = reservationRepository.getChiffreAffairesParPeriode(dateDebut, dateFin);
+        return chiffreAffaires != null ? chiffreAffaires : BigDecimal.ZERO;
     }
 }

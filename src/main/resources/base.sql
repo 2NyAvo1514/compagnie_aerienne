@@ -105,3 +105,13 @@ CREATE TABLE reservation (
 CREATE INDEX idx_vol_aeroports ON vol(aeroport_depart_id, aeroport_arrivee_id);
 CREATE INDEX idx_avionvol_date ON avion_vol(date_heure);
 CREATE INDEX idx_reservation_client ON reservation(client_id);
+
+ALTER TABLE vol ADD COLUMN prix DECIMAL(10,2) NOT NULL DEFAULT 0.00;
+
+-- Ajouter une colonne prix_total à la table reservation
+ALTER TABLE reservation ADD COLUMN prix_total DECIMAL(10,2) NOT NULL DEFAULT 0.00;
+
+-- Mettre à jour les prix existants (exemple)
+UPDATE vol SET prix = 250000.00 WHERE id = 1;
+UPDATE vol SET prix = 300000.00 WHERE id = 2;
+UPDATE vol SET prix = 200000.00 WHERE id = 3;

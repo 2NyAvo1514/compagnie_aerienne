@@ -11,7 +11,7 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold mb-3">Trouvez votre vol idéal</h1>
-                <p class="lead mb-4">Réservez vos billets d'avion en toute simplicité avec AirConnect. 
+                <p class="lead mb-4">Réservez vos billets d'avion en toute simplicité avec Madagascar Airways. 
                 Des centaines de destinations à travers le monde vous attendent.</p>
                 <div class="d-flex align-items-center">
                     <i class="fas fa-shield-alt fa-2x me-3"></i>
@@ -272,7 +272,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4 mb-4">
-                <h4 class="mb-4">AirConnect</h4>
+                <h4 class="mb-4">Madagascar Airways</h4>
                 <p>Votre compagnie aérienne de confiance. Vols sécurisés et confortables vers des destinations mondiales.</p>
                 <div class="social-icons mt-3">
                     <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
@@ -293,7 +293,7 @@
             <div class="col-md-3 mb-4">
                 <h5 class="mb-4">Contact</h5>
                 <p><i class="fas fa-phone me-2"></i> +261 20 22 222 22</p>
-                <p><i class="fas fa-envelope me-2"></i> contact@airconnect.mg</p>
+                <p><i class="fas fa-envelope me-2"></i> contact@Madagascar Airways.mg</p>
                 <p><i class="fas fa-map-marker-alt me-2"></i> Antananarivo 101, Madagascar</p>
             </div>
             <div class="col-md-3 mb-4">
@@ -308,7 +308,7 @@
         <hr class="bg-white-50">
         <div class="row mt-4">
             <div class="col-md-6">
-                <p class="mb-0">&copy; 2024 AirConnect. Tous droits réservés.</p>
+                <p class="mb-0">&copy; 2024 Madagascar Airways. Tous droits réservés.</p>
             </div>
             <div class="col-md-6 text-md-end">
                 <a href="#" class="text-white-50 text-decoration-none me-3">Mentions légales</a>

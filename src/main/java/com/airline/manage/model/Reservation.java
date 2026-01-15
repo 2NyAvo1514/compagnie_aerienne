@@ -1,5 +1,8 @@
 package com.airline.manage.model;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +22,12 @@ public class Reservation {
 
     @Column(name = "nb_places", nullable = false)
     private Integer nbPlaces;
+
+    @Column(name = "prix_total", nullable = false, precision = 10, scale = 2)
+    private BigDecimal prixTotal = BigDecimal.ZERO;
+
+    @Column(name = "date_reservation", nullable = false)
+    private LocalDateTime dateReservation = LocalDateTime.now();
 
     // Constructeurs
     public Reservation() {
@@ -61,5 +70,28 @@ public class Reservation {
 
     public void setNbPlaces(Integer nbPlaces) {
         this.nbPlaces = nbPlaces;
+    }
+
+    public BigDecimal getPrixTotal() {
+        return prixTotal;
+    }
+
+    public void setPrixTotal(BigDecimal prixTotal) {
+        this.prixTotal = prixTotal;
+    }
+
+    public LocalDateTime getDateReservation() {
+        return dateReservation;
+    }
+
+    public void setDateReservation(LocalDateTime dateReservation) {
+        this.dateReservation = dateReservation;
+    }
+
+    // Méthode utilitaire pour formater le prix
+    public String getPrixTotalFormatted() {
+        if (prixTotal == null)
+            return "0.00 Ar";
+        return String.format("%,.2f Ar", prixTotal);
     }
 }

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Avion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "nom", nullable = false, length = 100)
     private String nom;
@@ -29,11 +29,11 @@ public class Avion {
     }
 
     // Getters et Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
