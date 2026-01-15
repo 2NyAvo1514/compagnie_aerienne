@@ -81,6 +81,7 @@ public class StatistiqueService {
         return resultats;
     }
 
+    
     // public List<ChiffreAffairesTrajetDTO> getChiffreAffairesParTrajet() {
     //     return volRepository.getChiffreAffairesParTrajet();
     // }

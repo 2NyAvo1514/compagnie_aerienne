@@ -204,6 +204,7 @@ JOIN place p ON p.type = 'economique'
 WHERE ad.ville = 'Antananarivo'
 AND aa.ville = 'Nosy Be';
 
+--test 
 SELECT 
     av.id,
     av.date_heure,
