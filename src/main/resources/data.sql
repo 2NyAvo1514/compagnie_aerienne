@@ -204,6 +204,16 @@ JOIN place p ON p.type = 'economique'
 WHERE ad.ville = 'Antananarivo'
 AND aa.ville = 'Nosy Be';
 
+SELECT 
+    av.id,
+    av.date_heure,
+    p.type,
+    pv.prix
+FROM prix_vol pv
+JOIN place p ON pv.id_place = p.id_place
+JOIN avion_vol av ON pv.id_avion_vol = av.id
+ORDER BY av.date_heure, p.type;
+
 
 -- Insertion des données de test
 
