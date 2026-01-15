@@ -98,6 +98,49 @@ CREATE TABLE reservation (
         REFERENCES client (id)
         ON DELETE CASCADE
 );
+--table Place 
+CREATE TABLE place (
+    id_place INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type VARCHAR(20) NOT NULL UNIQUE
+);
+--table avion-place
+CREATE TABLE avion_place (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_avion INTEGER NOT NULL,
+    id_place INTEGER NOT NULL,
+    nombre INTEGER NOT NULL CHECK (nombre >= 0),
+
+    CONSTRAINT fk_ap_avion
+        FOREIGN KEY (id_avion)
+        REFERENCES avion (id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_ap_place
+        FOREIGN KEY (id_place)
+        REFERENCES place (id_place)
+        ON DELETE CASCADE,
+
+    CONSTRAINT avion_place_unique UNIQUE (id_avion, id_place)
+);
+-- table prix-vol
+CREATE TABLE prix_vol (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_avion_vol INTEGER NOT NULL,
+    id_place INTEGER NOT NULL,
+    prix NUMERIC(12,2) NOT NULL CHECK (prix > 0),
+
+    CONSTRAINT fk_pv_avionvol
+        FOREIGN KEY (id_avion_vol)
+        REFERENCES avion_vol (id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_pv_place
+        FOREIGN KEY (id_place)
+        REFERENCES place (id_place)
+        ON DELETE CASCADE,
+
+    CONSTRAINT prix_vol_unique UNIQUE (id_avion_vol, id_place)
+);
 
 -- =======================
 -- Index utiles (PostgreSQL)

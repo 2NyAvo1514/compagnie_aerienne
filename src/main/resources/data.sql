@@ -137,6 +137,73 @@ VALUES (
      WHERE a1.ville = 'Antananarivo' AND a2.ville = 'Toliara'),
     '2026-01-19 07:00:00+03'
 );
+--insertion place 
+INSERT INTO place (type) VALUES
+('premiere'),
+('business'),
+('economique')
+ON CONFLICT DO NOTHING;
+
+--Avion-place 
+-- Première classe
+INSERT INTO avion_place (id_avion, id_place, nombre)
+SELECT 
+    a.id,
+    p.id_place,
+    12
+FROM avion a, place p
+WHERE a.modele = 'ATR 72-600'
+AND p.type = 'premiere';
+
+-- Économique
+INSERT INTO avion_place (id_avion, id_place, nombre)
+SELECT 
+    a.id,
+    p.id_place,
+    60
+FROM avion a, place p
+WHERE a.modele = 'ATR 72-600'
+AND p.type = 'economique';
+
+-- Business = 0
+INSERT INTO avion_place (id_avion, id_place, nombre)
+SELECT 
+    a.id,
+    p.id_place,
+    0
+FROM avion a, place p
+WHERE a.modele = 'ATR 72-600'
+AND p.type = 'business';
+
+--prix vol
+-- Première classe
+INSERT INTO prix_vol (id_avion_vol, id_place, prix)
+SELECT 
+    av.id,
+    p.id_place,
+    1200000
+FROM avion_vol av
+JOIN vol v ON av.vol_id = v.id
+JOIN aeroport ad ON v.aeroport_depart_id = ad.id
+JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
+JOIN place p ON p.type = 'premiere'
+WHERE ad.ville = 'Antananarivo'
+AND aa.ville = 'Nosy Be';
+
+-- Classe économique
+INSERT INTO prix_vol (id_avion_vol, id_place, prix)
+SELECT 
+    av.id,
+    p.id_place,
+    450000
+FROM avion_vol av
+JOIN vol v ON av.vol_id = v.id
+JOIN aeroport ad ON v.aeroport_depart_id = ad.id
+JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
+JOIN place p ON p.type = 'economique'
+WHERE ad.ville = 'Antananarivo'
+AND aa.ville = 'Nosy Be';
+
 
 -- Insertion des données de test
 
