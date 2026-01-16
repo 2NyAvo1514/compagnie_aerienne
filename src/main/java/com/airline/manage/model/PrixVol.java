@@ -1,7 +1,16 @@
 package com.airline.manage.model;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "prix_vol")
@@ -11,13 +20,17 @@ public class PrixVol {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_avion_vol", nullable = false)
     private AvionVol avionVol;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_place", nullable = false)
     private Place place;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoriepassager", nullable = false)
+    private CategoriePassager categoriePassager;
 
     @Column(name = "prix", nullable = false, precision = 12, scale = 2)
     private BigDecimal prix;
@@ -26,9 +39,13 @@ public class PrixVol {
     public PrixVol() {
     }
 
-    public PrixVol(AvionVol avionVol, Place place, BigDecimal prix) {
+    public PrixVol(AvionVol avionVol,
+                   Place place,
+                   CategoriePassager categoriePassager,
+                   BigDecimal prix) {
         this.avionVol = avionVol;
         this.place = place;
+        this.categoriePassager = categoriePassager;
         this.prix = prix;
     }
 
@@ -57,6 +74,14 @@ public class PrixVol {
         this.place = place;
     }
 
+    public CategoriePassager getCategoriePassager() {
+        return categoriePassager;
+    }
+
+    public void setCategoriePassager(CategoriePassager categoriePassager) {
+        this.categoriePassager = categoriePassager;
+    }
+
     public BigDecimal getPrix() {
         return prix;
     }
@@ -68,5 +93,16 @@ public class PrixVol {
     // Méthode utilitaire pour formater le prix
     public String getPrixFormatted() {
         return String.format("%,.2f Ar", prix);
+    }
+
+    @Override
+    public String toString() {
+        return "PrixVol{" +
+                "id=" + id +
+                ", avionVol=" + (avionVol != null ? avionVol.getId() : null) +
+                ", place=" + (place != null ? place.getId() : null) +
+                ", categoriePassager=" + (categoriePassager != null ? categoriePassager.getId() : null) +
+                ", prix=" + prix +
+                '}';
     }
 }

@@ -140,7 +140,7 @@ VALUES (
 --insertion place 
 INSERT INTO place (type) VALUES
 ('premiere'),
-('business'),
+('premium'),
 ('economique')
 ON CONFLICT DO NOTHING;
 
