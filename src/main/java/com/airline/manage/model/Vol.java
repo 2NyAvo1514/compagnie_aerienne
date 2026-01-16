@@ -1,8 +1,12 @@
 package com.airline.manage.model;
 
-import java.math.BigDecimal;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "vol")
@@ -19,8 +23,8 @@ public class Vol {
     @JoinColumn(name = "aeroport_arrivee_id", nullable = false)
     private Aeroport aeroportArrivee;
 
-    @Column(name = "prix", nullable = false, precision = 10, scale = 2)
-    private BigDecimal prix = BigDecimal.ZERO;
+    // @Column(name = "prix", nullable = false, precision = 10, scale = 2)
+    // private BigDecimal prix = BigDecimal.ZERO;
 
     // Constructeurs
     public Vol() {
@@ -56,18 +60,18 @@ public class Vol {
         this.aeroportArrivee = aeroportArrivee;
     }
 
-    public BigDecimal getPrix() {
-        return prix;
-    }
+    // public BigDecimal getPrix() {
+    //     return prix;
+    // }
 
-    public void setPrix(BigDecimal prix) {
-        this.prix = prix;
-    }
+    // public void setPrix(BigDecimal prix) {
+    //     this.prix = prix;
+    // }
 
-    // Méthode utilitaire pour formater le prix
-    public String getPrixFormatted() {
-        if (prix == null)
-            return "0.00 Ar";
-        return String.format("%,.2f Ar", prix);
-    }
+    // // Méthode utilitaire pour formater le prix
+    // public String getPrixFormatted() {
+    //     if (prix == null)
+    //         return "0.00 Ar";
+    //     return String.format("%,.2f Ar", prix);
+    // }
 }

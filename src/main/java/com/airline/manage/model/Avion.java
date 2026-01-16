@@ -1,10 +1,16 @@
 package com.airline.manage.model;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "avion")
@@ -91,19 +97,19 @@ public class Avion {
     }
     
     // Méthode pour calculer la valeur maximale pour un vol donné
-    public BigDecimal getValeurMaximalePourVol(AvionVol avionVol) {
-        BigDecimal valeurTotale = BigDecimal.ZERO;
+    // public BigDecimal getValeurMaximalePourVol(AvionVol avionVol) {
+    //     BigDecimal valeurTotale = BigDecimal.ZERO;
         
-        for (AvionPlace avionPlace : avionPlaces) {
-            // Trouver le prix pour cette place sur ce vol
-            BigDecimal prix = avionVol.getPrixParTypePlace(avionPlace.getPlace().getType());
-            if (prix != null) {
-                valeurTotale = valeurTotale.add(
-                    prix.multiply(BigDecimal.valueOf(avionPlace.getNombre()))
-                );
-            }
-        }
+    //     for (AvionPlace avionPlace : avionPlaces) {
+    //         // Trouver le prix pour cette place sur ce vol
+    //         BigDecimal prix = avionVol.getPrixParTypePlace(avionPlace.getPlace().getType());
+    //         if (prix != null) {
+    //             valeurTotale = valeurTotale.add(
+    //                 prix.multiply(BigDecimal.valueOf(avionPlace.getNombre()))
+    //             );
+    //         }
+    //     }
         
-        return valeurTotale;
-    }
+    //     return valeurTotale;
+    // }
 }

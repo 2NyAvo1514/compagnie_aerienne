@@ -258,8 +258,8 @@ public class AvionVol {
         }
 
         // Créer un nouveau PrixVol
-        PrixVol nouveauPrix = new PrixVol(this, place, prix);
-        prixVols.add(nouveauPrix);
+        // PrixVol nouveauPrix = new PrixVol(this, place, prix);
+        // prixVols.add(nouveauPrix);
     }
 
     @Override
