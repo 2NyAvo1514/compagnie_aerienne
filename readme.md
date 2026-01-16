@@ -12,8 +12,8 @@ Projet transversal S5 - S3
 
 ## Fonctionnalite(s)
 
-. Un client veut acheter des places pour un vol de Aéroport de TNR à l'aéroport de Nosy Be pour le 12 janvier à 12h
-. Un avion possede des places de différentes classes (économique,première)
+- Un client veut acheter des places pour un vol de Aéroport de TNR à l'aéroport de Nosy Be pour le 12 janvier à 12h
+- Un avion possede des places de différentes classes (économique,première)
 Pour un vol Tana - Nosy Be , place première classe : 1.200.000 Ar , place économique : 700.000 Ar
 Donner la valeur maximale qu'un avion peut generer pour un vol
 ## Deploiement local
