@@ -240,7 +240,8 @@ ORDER BY av.date_heure, p.type;
 --insertion categoriepassager 
 INSERT INTO categoriepassager (type) VALUES
 ('adulte'),
-('enfant')
+('enfant'),
+('bébé')
 ON CONFLICT DO NOTHING;
 -- Insertion des données de test
 
@@ -346,3 +347,4 @@ ON CONFLICT DO NOTHING;
 -- JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
 -- WHERE av.date_heure >= NOW()
 -- ORDER BY av.date_heure;
+
