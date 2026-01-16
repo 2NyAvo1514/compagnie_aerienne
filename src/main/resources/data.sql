@@ -237,6 +237,11 @@ JOIN avion_vol av ON pv.id_avion_vol = av.id
 ORDER BY av.date_heure, p.type;
 
 
+--insertion categoriepassager 
+INSERT INTO categoriepassager (type) VALUES
+('adulte'),
+('enfant')
+ON CONFLICT DO NOTHING;
 -- Insertion des données de test
 
 -- -- Aéroports

@@ -143,6 +143,39 @@ CREATE TABLE prix_vol (
     CONSTRAINT prix_vol_unique UNIQUE (id_avion_vol, id_place)
 );
 
+ALTER TABLE reservation
+ADD COLUMN id_categoriepassager INTEGER;
+
+ALTER TABLE reservation
+ADD CONSTRAINT fk_res_categoriepassager
+FOREIGN KEY (id_categoriepassager)
+REFERENCES categoriepassager (id_categoriepassager)
+ON DELETE CASCADE;
+
+ALTER TABLE reservation
+ADD COLUMN id_place INTEGER;
+
+ALTER TABLE reservation
+ADD CONSTRAINT fk_res_place
+FOREIGN KEY (id_place)
+REFERENCES place (id_place)
+ON DELETE CASCADE;
+
+ALTER TABLE prix_vol
+ADD COLUMN id_categoriepassager INTEGER;
+
+ALTER TABLE prix_vol
+ADD CONSTRAINT fk_pv_categoriepassager
+FOREIGN KEY (id_categoriepassager)
+REFERENCES categoriepassager (id_categoriepasssager)
+ON DELETE CASCADE;
+
+
+--table categoripassager 
+CREATE TABLE categoripassager (
+    id_categoripassager INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nom VARCHAR(20) NOT NULL UNIQUE
+);
 -- =======================
 -- Index utiles (PostgreSQL)
 -- =======================
