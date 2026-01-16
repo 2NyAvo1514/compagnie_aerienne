@@ -98,6 +98,7 @@ CREATE TABLE reservation (
         REFERENCES client (id)
         ON DELETE CASCADE
 );
+
 --table Place 
 CREATE TABLE place (
     id_place INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

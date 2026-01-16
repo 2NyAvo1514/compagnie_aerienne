@@ -144,6 +144,7 @@ INSERT INTO place (type) VALUES
 ('economique')
 ON CONFLICT DO NOTHING;
 
+update place set type = 'premium'   where type = 'business';
 --Avion-place 
 -- Première classe
 INSERT INTO avion_place (id_avion, id_place, nombre)
@@ -155,6 +156,8 @@ FROM avion a, place p
 WHERE a.modele = 'ATR 72-600'
 AND p.type = 'premiere';
 
+update avion_place set nombre = 30 where nombre=12;
+update avion_place set nombre = 50 where nombre=60;
 -- Économique
 INSERT INTO avion_place (id_avion, id_place, nombre)
 SELECT 
@@ -170,10 +173,12 @@ INSERT INTO avion_place (id_avion, id_place, nombre)
 SELECT 
     a.id,
     p.id_place,
-    0
+    40
 FROM avion a, place p
 WHERE a.modele = 'ATR 72-600'
-AND p.type = 'business';
+AND p.type = 'premium';
+
+update avion_place set nombre = 40 where nombre=0;
 
 --prix vol
 -- Première classe
@@ -203,6 +208,22 @@ JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
 JOIN place p ON p.type = 'economique'
 WHERE ad.ville = 'Antananarivo'
 AND aa.ville = 'Nosy Be';
+
+update prix_vol set prix = 700000 where prix=450000;
+
+INSERT INTO prix_vol (id_avion_vol, id_place, prix)
+SELECT 
+    av.id,
+    p.id_place,
+    1000000
+FROM avion_vol av
+JOIN vol v ON av.vol_id = v.id
+JOIN aeroport ad ON v.aeroport_depart_id = ad.id
+JOIN aeroport aa ON v.aeroport_arrivee_id = aa.id
+JOIN place p ON p.type = 'premium'
+WHERE ad.ville = 'Antananarivo'
+AND aa.ville = 'Nosy Be';
+
 
 --test 
 SELECT 
